@@ -37,6 +37,7 @@ export default function ViewerPanel({ doc, onSelectSample }: ViewerPanelProps) {
   const [epubChapterIdx, setEpubChapterIdx] = useState(0);
   const [activeParagraph, setActiveParagraph] = useState<{ sectionIndex: number; paragraphIndex: number } | null>(null);
   const [pdfInverted, setPdfInverted] = useState(false);
+  const [embedEngine, setEmbedEngine] = useState<'google' | 'native'>('native');
   
   // Local state for local annotations loaded dynamically
   const [annotations, setAnnotations] = useState<FileAnnotation[]>([]);
@@ -57,6 +58,10 @@ export default function ViewerPanel({ doc, onSelectSample }: ViewerPanelProps) {
   useEffect(() => {
     setEpubChapterIdx(0);
     setActiveParagraph(null);
+    if (doc) {
+      // Direct detection: external URLs like Dropbox should default to Google proxy to enforce inline display & prevent forced attachment downloads
+      setEmbedEngine(doc.url.startsWith('http') ? 'google' : 'native');
+    }
   }, [doc?.id]);
 
   if (!doc) {
@@ -590,15 +595,15 @@ export default function ViewerPanel({ doc, onSelectSample }: ViewerPanelProps) {
               </div>
             </div>
 
-            {/* Hint Notice */}
+             {/* Hint Notice */}
             <div className={`w-full max-w-[680px] rounded-xl p-4 flex gap-3 text-2xs font-sans leading-relaxed select-text ${activeTheme.helpBox}`}>
               <Info className="w-4 h-4 text-brand shrink-0 mt-0.5" />
-              <div className="space-y-1">
-                <p className="font-semibold">{isEpubType ? 'EPUB Reader Mode' : 'Interactive Web Preview Mode'}</p>
-                <p className="opacity-80">
+              <div className="space-y-1.5">
+                <p className="font-semibold">{isEpubType ? 'EPUB Book Mode' : 'Interactive Web Preview Explanation'}</p>
+                <p className="opacity-95 leading-relaxed">
                   {isEpubType 
                     ? "Renders clean virtual page layers natively with precise modular spacing. Click on any block quote or paragraph to paint colors, add highlights, or write marginal review citations."
-                    : "For reading ease, annotations map directly to text blocks. You can view or toggle layouts using the top-bar switchers."
+                    : "To support real-time digital highlighters, custom color shades, and saved margin annotations in standard browser containers, the Web Preview processes indexed text layers (represented here with prefaces, key historical chapters, and selected bible fragments). To browse, scroll, zoom, and view the entire native multi-page document file directly, click the \"PDF Embed\" toggle button on the top menu!"
                   }
                 </p>
               </div>
@@ -606,48 +611,87 @@ export default function ViewerPanel({ doc, onSelectSample }: ViewerPanelProps) {
 
           </div>
         ) : (
-          /* Native Chromium layout embed */
+          /* Native/Cloud Document Multi-Engine layout embed */
           <div className="w-full h-full flex flex-col gap-4">
             
-            {/* Warning Header & Dark Inverter Toggle */}
-            <div className="bg-[#2a2a22] border border-brand-border/20 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            {/* Warning Header & Embedding Engine Selector + Dark Inverter Toggle */}
+            <div className="bg-[#2a2a22] border border-brand-border/20 rounded-xl p-4 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
               <div className="flex gap-3 text-2xs font-sans leading-relaxed select-text">
                 <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-semibold text-brand-light">Using Native PDF Frame Mode?</p>
+                  <p className="font-semibold text-brand-light">PDF Rendering Engine Configuration</p>
                   <p className="text-brand-light/60 mt-0.5">
-                    If browser plugins are restricted or blocked inside sandbox panels, switch to raw <strong className="text-brand underline cursor-pointer" onClick={() => setViewMode('preview')}>Web Preview</strong> or click <strong className="text-brand underline">Open in Tab</strong>.
+                    For cloud-hosted links (like Dropbox attachments), use <strong>Google Online Viewer</strong> to prevent forced downloads. For local resources, use <strong>Browser Native</strong>.
                   </p>
                 </div>
               </div>
 
-              {/* Inversion Trigger */}
-              <button
-                onClick={() => setPdfInverted(!pdfInverted)}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-4xs font-bold font-sans uppercase tracking-widest transition-colors cursor-pointer ${
-                  pdfInverted 
-                    ? 'bg-brand text-white' 
-                    : 'bg-[#1e1e19] text-brand-light border border-white/5 hover:border-white/10'
-                }`}
-                title="Inverts native PDF styling to deliver a magnificent late-night reader experience!"
-              >
-                <Moon className="w-3 h-3 text-yellow-100" />
-                {pdfInverted ? 'NORMAL PDF' : 'INVERT DARK PDF'}
-              </button>
+              {/* Configuration Tools Bar */}
+              <div className="flex flex-wrap items-center gap-3">
+                {/* Engine Selector */}
+                <div className="flex items-center gap-1 bg-[#1e1e19] p-1 rounded-lg border border-white/5">
+                  <button
+                    onClick={() => setEmbedEngine('google')}
+                    className={`px-2.5 py-1.5 rounded text-4xs font-bold font-sans uppercase tracking-wider transition-colors cursor-pointer ${
+                      embedEngine === 'google'
+                        ? 'bg-brand text-white shadow'
+                        : 'text-brand-light/50 hover:text-brand-light'
+                    }`}
+                    title="Render inline using safe Google cloud document proxy stream"
+                  >
+                    Google Viewer
+                  </button>
+                  <button
+                    onClick={() => setEmbedEngine('native')}
+                    className={`px-2.5 py-1.5 rounded text-4xs font-bold font-sans uppercase tracking-wide transition-colors cursor-pointer ${
+                      embedEngine === 'native'
+                        ? 'bg-brand text-white shadow shadow-brand/20'
+                        : 'text-brand-light/50 hover:text-brand-light'
+                    }`}
+                    title="Load raw native browser plugins (might trigger downloads on cloud storage links depending on browser limits)"
+                  >
+                    Browser Native
+                  </button>
+                </div>
+
+                {/* Inversion Trigger */}
+                <button
+                  onClick={() => setPdfInverted(!pdfInverted)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-4xs font-bold font-sans uppercase tracking-widest transition-colors cursor-pointer ${
+                    pdfInverted 
+                      ? 'bg-brand text-white' 
+                      : 'bg-[#1e1e19] text-brand-light border border-white/5 hover:border-white/10'
+                  }`}
+                  title="Inverts PDF colors to deliver a magnificent eye-saving dark theme!"
+                >
+                  <Moon className="w-3 h-3 text-yellow-105" />
+                  {pdfInverted ? 'NORMAL PDF' : 'INVERT PDF'}
+                </button>
+              </div>
             </div>
 
             {/* Frame Embed with conditional hardware CSS inversion */}
             <div 
-              className="flex-1 rounded-xl overflow-hidden relative border border-brand-border/30 transition-all duration-300"
+              className="flex-1 rounded-xl overflow-hidden relative border border-brand-border/30 bg-white transition-all duration-350 flex flex-col"
               style={{ filter: pdfInverted ? 'invert(90%) hue-rotate(180deg)' : 'none' }}
             >
-              <iframe
-                key={doc.id} // Re-mount iframe when document changes to force refresh/prevent visual leaks
-                id="pdf-render-frame"
-                src={`${doc.url}#toolbar=1&navpanes=0`}
-                className="w-full h-full bg-white shadow-inner"
-                title={doc.title}
-              />
+              {embedEngine === 'google' ? (
+                <iframe
+                  key={`${doc.id}_google`} // Re-mount iframe when document changes or engine switches to force clear caching
+                  id="pdf-render-frame-google"
+                  src={`https://docs.google.com/viewer?url=${encodeURIComponent(doc.url)}&embedded=true`}
+                  className="w-full h-full flex-1 border-0"
+                  title={`${doc.title} - Google Docs Viewer Proxy`}
+                />
+              ) : (
+                <iframe
+                  key={`${doc.id}_native`} // Re-mount iframe when document changes or engine switches
+                  id="pdf-render-frame-native"
+                  src={`${doc.url}#toolbar=1&navpanes=0`}
+                  className="w-full h-full flex-1 border-0"
+                  title={`${doc.title} - Native Browser Embed`}
+                />
+              )}
             </div>
           </div>
         )}

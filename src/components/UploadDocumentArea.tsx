@@ -3,266 +3,128 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useRef } from 'react';
-import { Upload, X, FilePlus, ChevronDown, Sparkles } from 'lucide-react';
-import { PDFDocument } from '../types';
+import React, { useState } from 'react';
+import { ShieldAlert, Code, Copy, Check, Info, FilePlus, ChevronDown, BookOpen } from 'lucide-react';
 
-interface UploadDocumentAreaProps {
-  onAddDocument: (doc: PDFDocument) => void;
-}
+export default function UploadDocumentArea() {
+  const [copied, setCopied] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
 
-export default function UploadDocumentArea({ onAddDocument }: UploadDocumentAreaProps) {
-  const [dragActive, setDragActive] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
-  const [title, setTitle] = useState('');
-  const [category, setCategory] = useState<PDFDocument['category']>('Uploaded');
-  const [description, setDescription] = useState('');
-  const [tagsInput, setTagsInput] = useState('');
-  const [showConfig, setShowConfig] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  // Form states for the visual code builder
+  const [docTitle, setDocTitle] = useState('My New Document');
+  const [filename, setFilename] = useState('my-document.pdf');
+  const [category, setCategory] = useState<'Resume' | 'Proposal' | 'Tutorial' | 'Other'>('Resume');
+  const [description, setDescription] = useState('An elegant professional overview of key specifications.');
+  const [tagsInput, setTagsInput] = useState('Resume, Work');
 
-  const handleDrag = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true);
-    } else if (e.type === "dragleave") {
-      setDragActive(false);
-    }
-  };
+  const formattedTags = tagsInput
+    .split(',')
+    .map(t => t.trim())
+    .filter(t => t.length > 0);
 
-  const processFile = (selectedFile: File) => {
-    setError(null);
-    const isPdf = selectedFile.type === "application/pdf" || selectedFile.name.endsWith('.pdf');
-    const isEpub = selectedFile.name.endsWith('.epub') || selectedFile.type === "application/epub+zip";
-    
-    if (selectedFile && (isPdf || isEpub)) {
-      setFile(selectedFile);
-      // Pre-fill Title with a cleaned up version of the filename
-      const cleanedTitle = selectedFile.name
-        .replace(/\.[^/.]+$/, "") // remove extension
-        .replace(/[_-]/g, " ")    // replace dashes and underscores with spaces
-        .split(' ')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
-      setTitle(cleanedTitle);
-      setShowConfig(true);
-    } else {
-      setError("Invalid file format. Please upload a PDF (.pdf) or EPUB (.epub) file.");
-    }
-  };
+  // Generate date matching the current local year logic
+  const dateStr = new Date().toISOString().split('T')[0];
 
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
+  // Dynamically build the typescript code block they can copy
+  const generatedCode = `  {
+    id: '${Math.floor(Math.random() * 1000 + 5)}',
+    title: '${docTitle.replace(/'/g, "\\'")}',
+    filename: '${filename.trim()}',
+    url: '/${filename.trim()}',
+    size: '220 KB',
+    category: '${category}',
+    description: '${description.replace(/'/g, "\\'")}',
+    dateAdded: '${dateStr}',
+    tags: ${JSON.stringify(formattedTags)},
+    fileType: '${filename.toLowerCase().endsWith('.epub') ? 'epub' : 'pdf'}',
+    sections: [
+      {
+        title: '1. EXECUTIVE CORE',
+        content: [
+          "This is a custom content paragraph for your document web preview reader.",
+          "Add structured text records inside this array to enable high-fidelity typographic preview sheets."
+        ]
+      }
+    ]
+  }`;
 
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      processFile(e.dataTransfer.files[0]);
-    }
-  };
-
-  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      processFile(e.target.files[0]);
-    }
-  };
-
-  const formatFileSize = (bytes: number): string => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const dm = 1;
-    const sizes = ['Bytes', 'KB', 'MB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
-  };
-
-  const resetForm = () => {
-    setFile(null);
-    setTitle('');
-    setCategory('Uploaded');
-    setDescription('');
-    setTagsInput('');
-    setShowConfig(false);
-    setError(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!file) return;
-
-    // Create a local safe temporary URL
-    const fileUrl = URL.createObjectURL(file);
-    const sizeStr = formatFileSize(file.size);
-    const dateStr = new Date().toISOString().split('T')[0];
-    const tagsArray = tagsInput
-      .split(',')
-      .map(t => t.trim())
-      .filter(t => t.length > 0);
-
-    const isEpubFile = file.name.endsWith('.epub');
-    const fileType = isEpubFile ? 'epub' : 'pdf';
-    
-    let sections = undefined;
-    let epubChapters = undefined;
-    
-    if (isEpubFile) {
-      epubChapters = [
-        {
-          title: "Chapter I: Virtual EPUB Ingestion",
-          paragraphs: [
-            `Welcome to your custom interactive eBook volume: ${title || file.name}`,
-            `This publication has been indexed in secure browser sandboxed memory under a raw Virtual Blob reference. Size computed: ${sizeStr}.`,
-            "Designed beautifully with modular margins, this reader renders raw chapters natively, respecting natural line spacing ratios and custom font metrics."
-          ]
-        },
-        {
-          title: "Chapter II: Micro-Annotations Guide",
-          paragraphs: [
-            "We have loaded interactive scholarly tools into the reading dashboard.",
-            "Simply click on any paragraph text sentence block to bring up the Custom Margins controller.",
-            "From there, you can paint lines with soft light tones (Olive, Amber, Rose, or Slate) or write editorial marginal comments.",
-            "All annotations or highlights are instantly synced with your client's localStorage state, ensuring seamless review when you re-open your documents later!"
-          ]
-        }
-      ];
-    } else {
-      sections = [
-        {
-          title: "DOC SUMMARY",
-          content: [
-            `Successfully read PDF: ${title || file.name}`,
-            `Virtual path generated at: ${fileUrl}`,
-            `Registered archive size: ${sizeStr}.`
-          ]
-        },
-        {
-          title: "SANDBOX PREVIEW DETAILS",
-          content: [
-            "Because browsers isolate iframe renders, local uploaded PDFs may fail to render directly if standard PDF plugins are blocked.",
-            "Switch to Web Preview in the viewer toolbar to view this structured text summary immediately, or select 'Open in Tab' to test the PDF natively in full size."
-          ]
-        }
-      ];
-    }
-
-    const newDoc: PDFDocument = {
-      id: `custom_${Date.now()}`,
-      title: title || file.name,
-      filename: file.name,
-      url: fileUrl,
-      size: sizeStr,
-      category: category,
-      description: description || `Uploaded file: ${file.name}`,
-      dateAdded: dateStr,
-      tags: tagsArray.length > 0 ? tagsArray : ['My Files'],
-      isCustomUploaded: true,
-      fileType: fileType,
-      sections: sections,
-      epubChapters: epubChapters
-    };
-
-    onAddDocument(newDoc);
-    resetForm();
+  const handleCopyCode = () => {
+    navigator.clipboard.writeText(generatedCode);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
-    <div id="upload-panel-container" className="bg-[#fafaf7] border border-brand-border rounded-2xl p-5 mb-5 shadow-xs">
-      <div className="flex items-center gap-2 mb-3">
-        <Upload className="w-4 h-4 text-brand" />
-        <h3 className="font-serif font-bold text-sm text-charcoal">
-          Upload PDF or EPUB Book
-        </h3>
+    <div id="private-ingestion-panel" className="bg-[#fafaf7] border border-brand-border rounded-2xl p-5 mb-5 shadow-xs">
+      
+      {/* Admin Security Banner */}
+      <div className="flex items-center gap-2 pb-3 mb-4 border-b border-brand-border/40 select-none">
+        <ShieldAlert className="w-5 h-5 text-brand" />
+        <div>
+          <span className="text-[10px] font-mono font-bold tracking-widest text-brand uppercase block leading-none">
+            Security Control
+          </span>
+          <h3 className="font-serif font-bold text-sm text-charcoal">
+            Private Library Access Only
+          </h3>
+        </div>
       </div>
 
-      <p className="text-xs text-charcoal-light/75 mb-4 leading-normal font-sans">
-        Load your own files into this live sandboxed workspace. Uploaded documents run safely inside browser client-side RAM memory.
-      </p>
+      <div className="bg-brand/5 border border-brand-border/50 rounded-xl p-3 mb-4 text-2xs text-[#5a5a40]/90 leading-relaxed font-sans select-text">
+        <p className="font-semibold text-brand mb-1">🛡️ Public Uploads Disabled</p>
+        <p>
+          This portfolio is compiled as a robust static SPA. Standard visitors <strong>cannot upload or override</strong> your permanent shelf library. Only you, the repository owner, can add documents securely in code, keeping your site fully secure.
+        </p>
+      </div>
 
-      {error && (
-        <div className="bg-rose-50 border border-rose-100 text-rose-700 text-xs px-3.5 py-2 rounded-lg mb-4 flex items-center justify-between">
-          <span>{error}</span>
-          <button type="button" onClick={() => setError(null)} className="text-rose-500 hover:text-rose-800 font-bold ml-2 text-sm shrink-0 leading-none">
-            &times;
-          </button>
-        </div>
-      )}
-
-      {!file ? (
-        <div
-          onDragEnter={handleDrag}
-          onDragOver={handleDrag}
-          onDragLeave={handleDrag}
-          onDrop={handleDrop}
-          onClick={() => fileInputRef.current?.click()}
-          className={`border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition-all duration-200 ${
-            dragActive
-              ? 'border-brand bg-brand/10 scale-[0.99]'
-              : 'border-brand-border/60 hover:border-brand-border-hover hover:bg-brand-sidebar bg-white'
-          }`}
+      <div className="mb-4">
+        <button 
+          onClick={() => setIsOpen(!isOpen)}
+          className="w-full flex justify-between items-center text-3xs font-mono font-bold text-charcoal/70 uppercase tracking-wider hover:text-charcoal transition-colors cursor-pointer select-none"
         >
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".pdf,.epub"
-            onChange={handleFileInput}
-            className="hidden"
-          />
-          <div className="p-3 bg-brand-light rounded-lg text-brand mb-2 border border-brand-border/40 shadow-3xs">
-            <Upload className="w-5 h-5 text-brand" />
-          </div>
-          <span className="text-xs font-semibold text-charcoal font-sans text-center">
-            Drag & Drop your PDF or EPUB eBook here
+          <span className="flex items-center gap-1.5">
+            <Code className="w-3.5 h-3.5 text-brand" />
+            Interactive Ingestion Code builder
           </span>
-          <span className="text-3xs text-charcoal-light/60 font-sans mt-1 text-center">
-            Or Click to browse local folders
-          </span>
-        </div>
-      ) : (
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="flex items-start justify-between bg-brand-sidebar rounded-lg p-3 border border-brand-border">
-            <div className="flex items-center gap-2 min-w-0">
-              <div className="p-1.5 bg-brand/10 text-brand rounded-md">
-                <FilePlus className="w-4 h-4" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs font-mono text-charcoal truncate font-semibold">
-                  {file.name}
-                </p>
-                <p className="text-3xs text-[#5a5a40]/60 font-mono">
-                  {formatFileSize(file.size)}
-                </p>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={resetForm}
-              className="text-[#5a5a40]/50 hover:text-charcoal p-1 hover:bg-[#5a5a40]/5 rounded-md transition-colors shrink-0"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          </div>
+          <ChevronDown className={`w-3.5 h-3.5 text-brand/60 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        </button>
+      </div>
 
-          <div className="space-y-3 pt-1">
+      {isOpen && (
+        <div className="space-y-4 pt-1">
+          <p className="text-3xs text-charcoal-light/80 leading-relaxed font-sans">
+            Need to add your own files? Put your PDF or EPUB in your project's <code className="font-mono bg-[#f0f0e8] text-brand px-1 py-0.5 rounded">/public/</code> folder, then use the builder below to instant-generate your catalog code:
+          </p>
+
+          <div className="space-y-3 p-3.5 bg-white border border-brand-border rounded-xl">
+            {/* Input fields */}
             <div>
               <label className="block text-3xs font-semibold text-[#5a5a40]/60 uppercase tracking-wider mb-1 font-sans">
                 Document Title
               </label>
               <input
-                required
                 type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="e.g. My Custom Statement"
-                className="w-full text-xs font-sans px-3 py-2 border border-brand-border rounded-lg bg-white text-charcoal focus:outline-none focus:ring-1 focus:ring-brand focus:border-brand"
+                value={docTitle}
+                onChange={(e) => setDocTitle(e.target.value)}
+                placeholder="e.g. My Private Portfolio"
+                className="w-full text-xs font-sans px-3 py-1.5 border border-brand-border rounded-lg bg-[#fafaf7] text-charcoal focus:outline-none focus:ring-1 focus:ring-brand focus:border-brand"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-3xs font-semibold text-[#5a5a40]/60 uppercase tracking-wider mb-1 font-sans">
+                  Filename
+                </label>
+                <input
+                  type="text"
+                  value={filename}
+                  onChange={(e) => setFilename(e.target.value)}
+                  placeholder="e.g. portfolio.pdf"
+                  className="w-full text-xs font-sans px-3 py-1.5 border border-brand-border rounded-lg bg-[#fafaf7] text-charcoal focus:outline-none focus:ring-1 focus:ring-brand focus:border-brand"
+                />
+              </div>
+
               <div>
                 <label className="block text-3xs font-semibold text-[#5a5a40]/60 uppercase tracking-wider mb-1 font-sans">
                   Category
@@ -270,10 +132,9 @@ export default function UploadDocumentArea({ onAddDocument }: UploadDocumentArea
                 <div className="relative">
                   <select
                     value={category}
-                    onChange={(e) => setCategory(e.target.value as PDFDocument['category'])}
-                    className="w-full text-xs font-sans px-3 py-2 border border-brand-border rounded-lg bg-white text-charcoal focus:outline-none focus:ring-1 focus:ring-brand focus:border-brand appearance-none"
+                    onChange={(e) => setCategory(e.target.value as any)}
+                    className="w-full text-xs font-sans px-3 py-1.5 border border-brand-border rounded-lg bg-[#fafaf7] text-charcoal focus:outline-none focus:ring-1 focus:ring-brand focus:border-brand appearance-none"
                   >
-                    <option value="Uploaded">Uploaded</option>
                     <option value="Resume">Resume</option>
                     <option value="Proposal">Proposal</option>
                     <option value="Tutorial">Tutorial</option>
@@ -282,7 +143,9 @@ export default function UploadDocumentArea({ onAddDocument }: UploadDocumentArea
                   <ChevronDown className="w-3 h-3 text-[#5a5a40]/60 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
               </div>
+            </div>
 
+            <div className="grid grid-cols-1 gap-3">
               <div>
                 <label className="block text-3xs font-semibold text-[#5a5a40]/60 uppercase tracking-wider mb-1 font-sans">
                   Tags (Comma separated)
@@ -291,35 +154,67 @@ export default function UploadDocumentArea({ onAddDocument }: UploadDocumentArea
                   type="text"
                   value={tagsInput}
                   onChange={(e) => setTagsInput(e.target.value)}
-                  placeholder="e.g. Work, Invoice"
-                  className="w-full text-xs font-sans px-3 py-2 border border-brand-border rounded-lg bg-white text-charcoal focus:outline-none focus:ring-1 focus:ring-brand focus:border-brand"
+                  placeholder="e.g. Resume, Design"
+                  className="w-full text-xs font-sans px-3 py-1.5 border border-brand-border rounded-lg bg-[#fafaf7] text-charcoal focus:outline-none focus:ring-1 focus:ring-brand focus:border-brand"
+                />
+              </div>
+
+              <div>
+                <label className="block text-3xs font-semibold text-[#5a5a40]/60 uppercase tracking-wider mb-1 font-sans">
+                  Description
+                </label>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Short description of pages..."
+                  rows={2}
+                  className="w-full text-xs font-sans px-3 py-1.5 border border-brand-border rounded-lg bg-[#fafaf7] text-charcoal focus:outline-none focus:ring-1 focus:ring-brand focus:border-brand resize-none"
                 />
               </div>
             </div>
+          </div>
 
-            <div>
-              <label className="block text-3xs font-semibold text-[#5a5a40]/60 uppercase tracking-wider mb-1 font-sans">
-                Short Description
-              </label>
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Describe this document..."
-                rows={2}
-                className="w-full text-xs font-sans px-3 py-2 border border-brand-border rounded-lg bg-white text-charcoal focus:outline-none focus:ring-1 focus:ring-brand focus:border-brand resize-none"
-              />
+          {/* Generated Code Preview Block */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between items-center px-1">
+              <span className="text-4xs font-mono text-brand/70 font-bold uppercase tracking-widest flex items-center gap-1.5">
+                <Code className="w-3 h-3" /> Auto-Generated Array Record
+              </span>
+              <button
+                onClick={handleCopyCode}
+                className="text-brand/60 hover:text-brand bg-brand/5 border border-brand/10 hover:border-brand-border-hover p-1.5 px-3 rounded-lg text-4xs font-sans font-bold flex items-center gap-1.5 transition-all cursor-pointer"
+                title="Copy record to clipboard"
+              >
+                {copied ? (
+                  <>
+                    <Check className="w-3 h-3 text-emerald-600" />
+                    COPIED
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3 h-3" />
+                    COPY BLOCK
+                  </>
+                )}
+              </button>
+            </div>
+
+            <div className="bg-[#f0f0e8] border border-brand-border rounded-xl p-3 overflow-hidden relative">
+              <pre className="text-4xs font-mono text-charcoal overflow-x-auto max-h-[160px] whitespace-pre select-all leading-normal">
+                {generatedCode}
+              </pre>
             </div>
           </div>
 
-          <button
-            type="submit"
-            className="w-full bg-brand hover:bg-[#4a4a35] text-white text-xs font-semibold py-2.5 px-4 rounded-xl shadow-xs transition-colors cursor-pointer flex items-center justify-center gap-1.5"
-          >
-            <Sparkles className="w-3.5 h-3.5 fill-current text-white" />
-            Add to Document Catalog
-          </button>
-        </form>
+          <div className="bg-[#f0f0e8]/50 rounded-xl p-3 border border-brand-border flex gap-2 items-start select-text leading-relaxed">
+            <Info className="w-4 h-4 text-brand shrink-0 mt-0.5" />
+            <div className="text-3xs font-sans text-charcoal-light/80">
+              <strong className="text-brand">Final Step:</strong> Paste this block inside the main array in <code className="font-mono bg-white px-1 py-0.2 rounded border border-brand-border">src/data.ts</code>. Commit and push to GitHub so your Netlify pipeline deploys it immediately!
+            </div>
+          </div>
+        </div>
       )}
+
     </div>
   );
 }

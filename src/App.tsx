@@ -45,7 +45,8 @@ export default function App() {
 
       const matchesCategory = 
         selectedCategory === 'All' || 
-        doc.category === selectedCategory;
+        doc.category === selectedCategory ||
+        (selectedCategory === 'eBook' && doc.fileType === 'epub');
 
       return matchesSearch && matchesCategory;
     });
@@ -54,11 +55,6 @@ export default function App() {
   const activeDocument = useMemo(() => {
     return documents.find(doc => doc.id === selectedDocId) || null;
   }, [documents, selectedDocId]);
-
-  const handleAddDocument = (newDoc: PDFDocument) => {
-    setDocuments(prev => [newDoc, ...prev]);
-    setSelectedDocId(newDoc.id); // Automatically focus search view on the uploaded PDF
-  };
 
   const handleDeleteDocument = (id: string) => {
     setDocuments(prev => prev.filter(doc => doc.id !== id));
@@ -74,7 +70,7 @@ export default function App() {
     }
   };
 
-  const categories = ['All', 'Resume', 'Proposal', 'Tutorial', 'Uploaded', 'Other'];
+  const categories = ['All', 'Resume', 'Proposal', 'Tutorial', 'eBook', 'Other'];
 
   return (
     <div id="app-root-container" className="min-h-screen bg-[#f5f5f0] text-charcoal selection:bg-[#5a5a40]/20 selection:text-charcoal font-sans">
@@ -214,8 +210,8 @@ export default function App() {
               )}
             </div>
 
-            {/* Inline Upload Form */}
-            <UploadDocumentArea onAddDocument={handleAddDocument} />
+            {/* Private Ingestion panel */}
+            <UploadDocumentArea />
 
           </div>
 

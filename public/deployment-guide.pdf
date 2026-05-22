@@ -1,0 +1,52 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >> /F2 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> >> >> /Contents 4 0 R >>
+endobj
+4 0 obj
+<< /Length 1100 >>
+stream
+BT
+/F1 22 Tf
+50 720 Td (DEPLOYMENT & STORAGE MANUAL: NETLIFY + GITHUB) Tj
+/F2 12 Tf
+0 -30 Td (A quick setup guide to host your custom PDF Shelf website on Netlify) Tj
+0 -40 Td (1. PROJECT REQUREMENTS:) Tj
+0 -15 Td (This application compiled via Vite provides entirely static production assets in the 'dist/') Tj
+0 -15 Td (directory, making it 100% compatible with modern static hosters (Netlify, Vercel, GH Pages).) Tj
+0 -40 Td (2. STORING YOUR OWN FILES:) Tj
+0 -15 Td (Simply place any PDF file you want in the '/public/' folder of your source directory.) Tj
+0 -15 Td (For example, save a file as 'public/my-file.pdf'. Once deployed, it can be viewed at) Tj
+0 -15 Td (yourwebsite.com/my-file.pdf. Add its metadata to the library catalog in the UI configs.) Tj
+0 -40 Td (3. GIT & GITHUB LINKING CONFIGURATIONS:) Tj
+0 -15 Td (- Initialize your git repository locally:  git init) Tj
+0 -15 Td (- Add your local files and commit:    git add . && git commit -m "feat: first commit") Tj
+0 -15 Td (- Add your remote GitHub repo:       git remote add origin https://github.com/USERNAME/REPO) Tj
+0 -15 Td (- Push your codebase:                 git push -u origin main) Tj
+0 -40 Td (4. NETLIFY 1-CLICK DEPLOYMENT:) Tj
+0 -15 Td (- Sign in to Netlify, and click "Add new site" -> "Import from an existing project".) Tj
+0 -15 Td (- Authenticate and select your GitHub repository.) Tj
+0 -15 Td (- Configure the Build Settings:) Tj
+0 -15 Td (  * Build Command: npm run build) Tj
+0 -15 Td (  * Publish Directory: dist) Tj
+0 -15 Td (- Click "Deploy site". Enjoy your automated CI/CD! Every push redeploys automatically.) Tj
+ET
+endstream
+endobj
+xref
+0 5
+0000000000 65535 f 
+0000000009 00000 n 
+0000000056 00000 n 
+0000000111 00000 n 
+0000000282 00000 n 
+trailer
+<< /Size 5 /Root 1 0 R >>
+startxref
+1440
+%%EOF

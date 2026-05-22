@@ -1,0 +1,48 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >> /F2 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> >> >> /Contents 4 0 R >>
+endobj
+4 0 obj
+<< /Length 990 >>
+stream
+BT
+/F1 22 Tf
+50 720 Td (PROJECT PROPOSAL: LITE PDF SHELF) Tj
+/F2 12 Tf
+0 -30 Td (Prepared for: Github & Netlify Reviewers   |   Author: Lead Architect   |   Date: May 2026) Tj
+0 -40 Td (1. EXECUTIVE SUMMARY:) Tj
+0 -15 Td (The Lite PDF Shelf is a ultra-responsive client-side web application designed to store,) Tj
+0 -15 Td (catalog, and render high-fidelity portable document formats (PDFs) directly in the browser.) Tj
+0 -15 Td (This system ensures instantaneous document access without heavy server-side processing.) Tj
+0 -40 Td (2. PRIMARY OBJECTIVES:) Tj
+0 -15 Td (- Provide zero-database offline capabilities using modern web APIs and local storage.) Tj
+0 -15 Td (- Craft an immersive, responsive split-pane interface styled with Tailwind CSS.) Tj
+0 -15 Td (- Implement secure drag-and-drop file ingestion using standard browser FileReader APIs.) Tj
+0 -40 Td (3. TECHNOLOGY STACK:) Tj
+0 -15 Td (- Framework: React 19 & Vite 6 with fully static HTML compilation.) Tj
+0 -15 Td (- Styling: Tailwind CSS v4 featuring unified utility classes and variables.) Tj
+0 -15 Td (- Deployment: Fully optimized for 1-click Netlify and GitHub static hosting.) Tj
+0 -40 Td (4. IMPLEMENTATION ROADMAP:) Tj
+0 -15 Td (- Phase 1: Interactive library cataloging, search indexes, and active state management.) Tj
+0 -15 Td (- Phase 2: Native embedded browser pdf frames & fluid motion layouts.) Tj
+ET
+endstream
+endobj
+xref
+0 5
+0000000000 65535 f 
+0000000009 00000 n 
+0000000056 00000 n 
+0000000111 00000 n 
+0000000282 00000 n 
+trailer
+<< /Size 5 /Root 1 0 R >>
+startxref
+1330
+%%EOF

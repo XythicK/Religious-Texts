@@ -187,5 +187,51 @@ export const initialDocuments: PDFDocument[] = [
         ]
       }
     ]
+  },
+  {
+    id: '5',
+    title: 'The Holy Bible - NKJV Edition',
+    filename: 'NKJV.pdf',
+    url: 'https://dl.dropboxusercontent.com/scl/fi/x1xs02jfxvljm1kvbwzjd/NKJV.pdf?rlkey=7lqc7r2ba6zz62e0ikyhoj60v&st=fagorpzj&raw=1',
+    size: '34.2 MB',
+    category: 'Other',
+    description: 'The New King James Version (NKJV) translation of the Holy Scriptures. Hosted on Dropbox cloud, fully indexable and annotated.',
+    dateAdded: '2026-05-22',
+    tags: ['Scripture', 'Bible', 'NKJV', 'Dropbox-Cloud'],
+    fileType: 'pdf',
+    sections: [
+      {
+        title: 'PREFACE & TRANSLATION NOTES',
+        content: [
+          'Welcome to your personal digital copy of the Holy Scriptures, New King James Version (NKJV), safely stored in the cloud.',
+          'To bypass physical size limitations (such as GitHub\'s 25MB threshold), this catalog dynamically routes text layers directly from your custom Dropbox storage repository.',
+          'This failsafe text preview enables you to leverage active digital annotations, marginal comments, and highlight markers on standard desktop or mobile viewing dimensions.'
+        ]
+      },
+      {
+        title: 'THE BOOK OF GENESIS',
+        content: [
+          'In the beginning God created the heavens and the earth.',
+          'The earth was without form, and void; and darkness was on the face of the deep. And the Spirit of God was hovering over the face of the waters.',
+          'Then God said, "Let there be light"; and there was light. And God saw the light, that it was good; and God divided the light from the darkness.',
+          'God called the light Day, and the darkness He called Night. So the evening and the morning were the first day.'
+        ]
+      },
+      {
+        title: 'THE BOOK OF PSALMS (Selected)',
+        content: [
+          'The Lord is my shepherd; I shall not want.',
+          'He makes me to lie down in green pastures; He leads me beside the still waters. He restores my soul; He leads me in the paths of righteousness for His name\'s sake.',
+          'Your word is a lamp to my feet and a light to my path.'
+        ]
+      },
+      {
+        title: 'CLOUD-STORAGE INFRASTRUCTURE BENEFITS',
+        content: [
+          'Integrating direct file sharing structures allows you to coordinate multiple massive volumes above 25MB without bloating local repository files.',
+          'Simply change the end parameters of any secure Dropbox shared link to "raw=1" to feed clean, native document byte streams into our customized, high-density reader layout.'
+        ]
+      }
+    ]
   }
 ];

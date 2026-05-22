@@ -8,6 +8,18 @@ export interface PDFDocumentSection {
   content: string[];
 }
 
+export interface FileAnnotation {
+  id: string;
+  documentId: string;
+  sectionIndex: number;
+  paragraphIndex: number;
+  text: string;
+  type: 'highlight' | 'quote';
+  color: 'olive' | 'amber' | 'rose' | 'slate';
+  note?: string;
+  createdAt: string;
+}
+
 export interface PDFDocument {
   id: string;
   title: string;
@@ -20,4 +32,6 @@ export interface PDFDocument {
   tags: string[];
   isCustomUploaded?: boolean;
   sections?: PDFDocumentSection[];
+  fileType?: 'pdf' | 'epub';
+  epubChapters?: { title: string; paragraphs: string[] }[];
 }

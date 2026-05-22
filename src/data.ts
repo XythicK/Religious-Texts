@@ -16,6 +16,7 @@ export const initialDocuments: PDFDocument[] = [
     description: 'A quick setup setup manual to host your custom PDF Shelf website on Netlify and link it with GitHub.',
     dateAdded: '2026-05-22',
     tags: ['Hosting', 'Netlify', 'GitHub', 'CI-CD'],
+    fileType: 'pdf',
     sections: [
       {
         title: '1. PROJECT REQUIREMENTS',
@@ -67,6 +68,7 @@ export const initialDocuments: PDFDocument[] = [
     description: 'An elegant professional developer resume layout showcasing skills, experience, and contact details.',
     dateAdded: '2026-05-20',
     tags: ['Resume', 'React', 'Tailwind'],
+    fileType: 'pdf',
     sections: [
       {
         title: 'ALEX RIDER - SENIOR SOFTWARE DESIGNER & DEVELOPER',
@@ -113,6 +115,7 @@ export const initialDocuments: PDFDocument[] = [
     description: 'Detailed project specifications, architectural milestones, and tech stack choices.',
     dateAdded: '2026-05-21',
     tags: ['Proposal', 'Design', 'Specs'],
+    fileType: 'pdf',
     sections: [
       {
         title: '1. EXECUTIVE SUMMARY',
@@ -143,6 +146,44 @@ export const initialDocuments: PDFDocument[] = [
         content: [
           "📅  Phase 1: Active state mapping, file indexing, text searching parameters, and category catalog filtering.",
           "📅  Phase 2: Typographic document preview canvas layers and customizable drag-and-drop ingestion protocols."
+        ]
+      }
+    ]
+  },
+  {
+    id: '4',
+    title: 'The Art of Swiss Minimal Design',
+    filename: 'minimal-design-essentials.epub',
+    url: '/minimal-design-essentials.epub',
+    size: '180 KB',
+    category: 'Tutorial',
+    description: 'An inspirational mini eBook handbook on Swiss typography, modular grids, negative ratios, and eye-comfort systems.',
+    dateAdded: '2026-05-23',
+    tags: ['eBook', 'EPUB', 'Design', 'Swiss'],
+    fileType: 'epub',
+    epubChapters: [
+      {
+        title: 'Introduction: The Swiss Legacy',
+        paragraphs: [
+          'Design is not the addition of heavy ornamentation, but the relentless pursuit of order, balance, and visual comfort.',
+          'The mid-20th century saw pioneering Swiss typographers craft high-contrast, perfectly tracked layouts that remain the gold standard of readable human-machine communication.',
+          'In this digital eBook anthology, we explore how negative space and humble natural palettes interact on paper.'
+        ]
+      },
+      {
+        title: 'Chapter I: The Magic of Negative Space',
+        paragraphs: [
+          'Negative space is never empty space. It is the active matrix that frames critical information and lets the user\'s eyes breathe.',
+          'When desktop applications clutter their interfaces with endless status badges, system telemetry logs, or credit tags, they generate extreme cognitive drift.',
+          'Keep your layout frames honest. By strictly prioritizing clean charcoal content headers on soft ivory canvases, you command attention instantly.'
+        ]
+      },
+      {
+        title: 'Chapter II: Natural Tone Palettes',
+        paragraphs: [
+          'Extreme high-contrast true black and white screens generate eye fatigue during prolonged research or document auditing.',
+          'Subtle organic variations of slate, warm olive (#5a5a40), and soft gray-canvases mimic the physical texture of premium paper books.',
+          'By utilizing cohesive light and dark color schemas, digital documents achieve a timeless, offline aesthetics feel.'
         ]
       }
     ]

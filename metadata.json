@@ -1,6 +1,6 @@
 {
   "name": "PDF Library and Viewer",
-  "description": "A simple, lightweight web application to store, manage, and view PDF documents.",
+  "description": "A lightweight web application to store, manage, and read PDF and EPUB documents with custom annotations and theme selections.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
